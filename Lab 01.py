@@ -45,7 +45,8 @@ class Logic:
 ## Blocks
 class Block:
 
-	def __init__(self,vars,func,*inp):
+	def __init__(self,name,vars,func,*inp):
+		self._name = name
 		self._vars = vars
 		self._logic = Logic()
 		self.func_name = func
@@ -71,7 +72,7 @@ class Block:
 
 	def __getattr__(self,name):
 
-		if (name == "value"):
+		if   (name == "value"):
 			if type(self.inp) is tuple:
 				ret = []
 				for item in self.inp:
@@ -92,6 +93,8 @@ class Block:
 				return self.func(self.inp)
 		elif (name == "type"):
 			return self.func_name
+		elif (name == "name"):
+			return self._name
 ## 
 
 def main():
@@ -104,21 +107,17 @@ def main():
 		 'x6' : 0,
 		 'x7' : 1}
 
-	# y = (x1 xor x2) nor ( not(x3) or ( x4 nand x7 nand (x5 nor x6) ) )
-	# 			F1			F2								F3
-	#												F4
-	#								F5
-	#					F6		
+	# Y = nor( xor( x1, x2 ), or( not( x3 ), nand( x4, x7, nor( x5, x6 ) ) ) )	
 
 	# Formula description
 	Field = {}
 
-	Field["F1"] = Block(X,"xor",'x1','x2')
-	Field["F2"] = Block(X,"not",'x3')
-	Field["F3"] = Block(X,"nor",'x5','x6')
-	Field["F4"] = Block(X,"nand",'x4','x7',Field["F3"])
-	Field["F5"] = Block(X,"or",Field["F2"],Field["F4"])
-	Field["F6"] = Block(X,"nor",Field["F1"],Field["F5"])
+	Field["F1"] = Block("F1",X,"xor",'x1','x2')
+	Field["F2"] = Block("F2",X,"not",'x3')
+	Field["F3"] = Block("F3",X,"nor",'x5','x6')
+	Field["F4"] = Block("F4",X,"nand",'x4','x7',Field["F3"])
+	Field["F5"] = Block("F5",X,"or",Field["F2"],Field["F4"])
+	Field["F6"] = Block("F6",X,"nor",Field["F1"],Field["F5"])
 
 	print ("Formula: Y = "+str(Field["F6"]))
 	
@@ -130,9 +129,6 @@ def main():
 
 	print (Field["F6"].value) # Y
 	Field[test_field] = error_bind_to
-
-	#print (Field)
-
 	print (Field["F6"].value) # Y
 
 ##################################
