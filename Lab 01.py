@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 import sys
 from types import *
 
-map_path = { 'F1': 'B1,B6'      , 'F2': 'B2,B5,B6', 
-			 'F3': 'B3,B4,B5,B6', 'F4': 'B4,B5,B6',
-			 'F5': 'B5,B6' }
+map_path = { 'F1': 'B6'      , 'F2': 'B5,B6', 
+			 'F3': 'B4,B5,B6', 'F4': 'B5,B6',
+			 'F5': 'B6' }
 
 
 map_blocks = {'B1': 'xor', 'B2' : 'not', 'B3' : 'nor',
@@ -44,9 +45,10 @@ class Logic:
 ## Blocks
 class Block:
 
-	def __init__(self,name,func,*inp):
-		self.name = name
+	def __init__(self,vars,func,*inp):
+		self._vars = vars
 		self._logic = Logic()
+		self.func_name = func
 		self.func = self._logic.Func(func.upper())
 		if (len(inp) == 1):
 			self.inp = inp[0]
@@ -54,31 +56,53 @@ class Block:
 			self.inp = inp
 
 	def __str__(self):
-		ret = str(self._logic) + str(self.func) + str(self.inp)
+		ret = self.func_name +"( " 
+
+		if type(self.inp) is tuple:
+			for num,item in enumerate(self.inp):
+				ret += str(item)
+				if num != len(self.inp) - 1:
+					ret += ", "
+
+		else:
+			ret += str(self.inp)
+		ret += " )"
 		return ret
 
-	def __getattr__(self,value):
-		if type(self.inp) is TupleType:
-			ret = []
-			for item in self.inp:
-				if type(item) is InstanceType:
-					ret.append(item.value)
-				else:
-					ret.append(item)
-			return self.func(*tuple(ret))
+	def __getattr__(self,name):
 
-		elif type(self.inp) is InstanceType:
-			return self.func(self.inp.value)
-		
-		else:
-			return self.func(self.inp)
+		if (name == "value"):
+			if type(self.inp) is tuple:
+				ret = []
+				for item in self.inp:
+					if type(item) is Block:
+						ret.append(item.value)
+					elif type(item) is str:
+						ret.append(self._vars[item])
+					else:
+						ret.append(item)
+				return self.func(*tuple(ret))
 
+			elif type(self.inp) is Block:
+				return self.func(self.inp.value)
+			
+			elif type(self.inp) is str:
+				return self.func(self._vars[self.inp])
+			else:
+				return self.func(self.inp)
+		elif (name == "type"):
+			return self.func_name
 ## 
 
 def main():
 
-	#    	x1,x2,x3,x4,x5,x6,x7
-	x = [-1, 1, 1, 1, 1, 0, 0, 1]
+	X = {'x1' : 1,
+		 'x2' : 1,
+		 'x3' : 1,
+		 'x4' : 1,
+		 'x5' : 0,
+		 'x6' : 0,
+		 'x7' : 1}
 
 	# y = (x1 xor x2) nor ( not(x3) or ( x4 nand x7 nand (x5 nor x6) ) )
 	# 			F1			F2								F3
@@ -86,14 +110,30 @@ def main():
 	#								F5
 	#					F6		
 
-	B1 = Block("B1","xor",x[1],x[2])
-	B2 = Block("B2","not",x[3])
-	B3 = Block("B3","nor",x[5],x[6])
-	B4 = Block("B4","nand",x[4],x[7],B3)
-	B5 = Block("B5","or",B2,B4)
-	B6 = Block("B6","nor",B1,B5)
+	# Formula description
+	Field = {}
 
-	print (B6.value) # Y
+	Field["F1"] = Block(X,"xor",'x1','x2')
+	Field["F2"] = Block(X,"not",'x3')
+	Field["F3"] = Block(X,"nor",'x5','x6')
+	Field["F4"] = Block(X,"nand",'x4','x7',Field["F3"])
+	Field["F5"] = Block(X,"or",Field["F2"],Field["F4"])
+	Field["F6"] = Block(X,"nor",Field["F1"],Field["F5"])
+
+	print ("Formula: Y = "+str(Field["F6"]))
+	
+	############ Tests
+	test_field = "F1"
+	error_bind_to = 0
+
+	print("Error: {0} ({1}) stuck at {2}".format(test_field,str(Field[test_field]),error_bind_to))
+
+	print (Field["F6"].value) # Y
+	Field[test_field] = error_bind_to
+
+	#print (Field)
+
+	print (Field["F6"].value) # Y
 
 ##################################
 if __name__=="__main__":
