@@ -123,6 +123,7 @@ def FuncCalc(inputX,BadPin="",BadStuckAt=-1):
 	
 	return LastCall.value
 
+	print("Error: {0} ({1}) stuck at {2}".format(test_field,str(Field[test_field]),error_bind_to))
 
 def main():
 
