@@ -1,6 +1,8 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import sys
 from types import *
+from itertools import *
 
 map_path = { 'F1': 'B6'      , 'F2': 'B5,B6', 
 			 'F3': 'B4,B5,B6', 'F4': 'B5,B6',
@@ -57,7 +59,7 @@ class Block:
 			self.inp = inp
 
 	def __str__(self):
-		ret = self.func_name +"( " 
+		ret = self.func_name +" ( " 
 
 		if type(self.inp) is tuple:
 			for num,item in enumerate(self.inp):
@@ -95,41 +97,93 @@ class Block:
 			return self.func_name
 		elif (name == "name"):
 			return self._name
+		else:
+			super().__getattr__(name)
 ## 
 
-def main():
-
-	X = {'x1' : 1,
-		 'x2' : 1,
-		 'x3' : 1,
-		 'x4' : 1,
-		 'x5' : 0,
-		 'x6' : 0,
-		 'x7' : 1}
-
-	# Y = nor( xor( x1, x2 ), or( not( x3 ), nand( x4, x7, nor( x5, x6 ) ) ) )	
-
+def FuncInit(inputX,BadPin,BadStuckAt):
 	# Formula description
 	Field = {}
 
-	Field["F1"] = Block("F1",X,"xor",'x1','x2')
-	Field["F2"] = Block("F2",X,"not",'x3')
-	Field["F3"] = Block("F3",X,"nor",'x5','x6')
-	Field["F4"] = Block("F4",X,"nand",'x4','x7',Field["F3"])
-	Field["F5"] = Block("F5",X,"or",Field["F2"],Field["F4"])
-	Field["F6"] = Block("F6",X,"nor",Field["F1"],Field["F5"])
+	Field["F1"] = BadStuckAt if BadPin == "F1" else Block("F1",inputX,"xor",'x1','x2')
+	Field["F2"] = BadStuckAt if BadPin == "F2" else Block("F2",inputX,"not",'x3')
+	Field["F3"] = BadStuckAt if BadPin == "F3" else Block("F3",inputX,"nor",'x5','x6')
+	Field["F4"] = BadStuckAt if BadPin == "F4" else Block("F4",inputX,"nand",'x4','x7',Field["F3"])
+	Field["F5"] = BadStuckAt if BadPin == "F5" else Block("F5",inputX,"or",Field["F2"],Field["F4"])
+	Field["F6"] = BadStuckAt if BadPin == "F6" else Block("F6",inputX,"nor",Field["F1"],Field["F5"])
 
-	print ("Formula: Y = "+str(Field["F6"]))
+	Out = Field["F6"]
+
+	#print ("Formula: Y = "+str(Out))
+
+	return Out
+
+def FuncCalc(inputX,BadPin="",BadStuckAt=-1):
+	LastCall = FuncInit(inputX,BadPin,BadStuckAt)
 	
-	############ Tests
-	test_field = "F1"
-	error_bind_to = 0
+	return LastCall.value
 
-	print("Error: {0} ({1}) stuck at {2}".format(test_field,str(Field[test_field]),error_bind_to))
 
-	print (Field["F6"].value) # Y
-	Field[test_field] = error_bind_to
-	print (Field["F6"].value) # Y
+def main():
+
+	# Generate all input variants
+	X_variants = []
+
+	perm = list(range(128))
+	i =0 
+	for variant in perm:
+
+		var_X = {}
+		# Gen inputs
+		inp = '{0:07b}'.format(variant)
+
+		var_pos = 1
+		for pos in inp:
+
+			if pos == "0":
+				val = 0
+			else:
+				val = 1
+
+			var_X["x"+str(var_pos)] = val
+			var_pos += 1
+
+		X_variants.append(var_X)
+
+	## Test them out!
+	BadPin = input()
+	BadStuckAt = int(input())
+	#BadPin = "F2"
+	#BadStuckAt = 0
+
+
+	normal_Y = []
+	bad_Y = []
+	items = []
+
+	for var_X in X_variants:
+		Y = FuncCalc(var_X)
+		normal_Y.append(Y)
+
+		bY = FuncCalc(var_X,BadPin,BadStuckAt)
+		bad_Y.append(bY)
+
+	for pos in range(len(normal_Y)):
+		val1 = normal_Y[pos]
+		val2 = bad_Y[pos]
+
+		if val1 != val2:
+			items.append(X_variants[pos])
+			#print(X_variants[pos])
+
+
+	print (len(items))
+
+	for i in items:
+		for var in ["x1","x2","x3","x4","x5","x6","x7"]:
+			sys.stdout.write(str(i[var])+" ")
+		print("")
+
 
 ##################################
 if __name__=="__main__":
