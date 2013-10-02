@@ -12,10 +12,17 @@ f6 = Function.new(12, "nor",  2, Input.new(7), Input.new(11))
 
 schema = [ f1, f2, f3, f4, f5, f6 ]
 
+# input
+error_at = instance_eval('f3')
+error_value = '1'.to_i
+
 d = DCube.new
-d_cubes = DCube.generate f3, 1
+d_cubes = DCube.generate_error error_at, error_value
+# First point
+d_functions = schema[(schema.index(error_at)+1)..-1]
+d_functions.each { |func| DCube.generate_for(func) }
+# Second point
 d_cubes.each do |d|
   puts d.join(", ")
-  #сгенерить последующие д кубы
+  binding.pry
 end
-binding.pry

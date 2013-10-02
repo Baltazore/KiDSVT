@@ -1,31 +1,31 @@
 class Function
 
-  attr_accessor :position, :operation, :inputs_number, :input0, :input1, :input2
+  attr_accessor :position, :operation, :inputs_number, :input0, :input1, :input2, :d_cubes
 
   SINGULAR_CUBES = {
     #           0 1 2 3 4 5 6 7 8 9 0 1 2
-    'f1' => [%w(0 0 x x x x x 0 x x x x x),
+    '7'  => [%w(0 0 x x x x x 0 x x x x x),
              %w(0 1 x x x x x 1 x x x x x),
              %w(1 0 x x x x x 1 x x x x x),
              %w(1 1 x x x x x 0 x x x x x)],
 
-    'f2' => [%w(x x 0 x x x x x 1 x x x x),
+    '8'  => [%w(x x 0 x x x x x 1 x x x x),
              %w(x x 1 x x x x x 0 x x x x)],
 
-    'f3' => [%w(x x x x 0 0 x x x 1 x x x),
+    '9'  => [%w(x x x x 0 0 x x x 1 x x x),
              %w(x x x x x 1 x x x 0 x x x),
              %w(x x x x 1 x x x x 0 x x x)],
 
-    'f4' => [%w(x x x 0 x x x x x x 1 x x),
+    '10' => [%w(x x x 0 x x x x x x 1 x x),
              %w(x x x x x x 0 x x x 1 x x),
              %w(x x x x x x x x x 0 1 x x),
              %w(x x x 1 x x 1 x x 1 0 x x)],
 
-    'f5' => [%w(x x x x x x x x 0 x 0 0 x),
+    '11' => [%w(x x x x x x x x 0 x 0 0 x),
              %w(x x x x x x x x x x 1 1 x),
              %w(x x x x x x x x 1 x x 1 x)],
 
-    'f6' => [%w(x x x x x x x 0 x x x 0 1),
+    '12' => [%w(x x x x x x x 0 x x x 0 1),
              %w(x x x x x x x x x x x 1 0),
              %w(x x x x x x x 1 x x x x 0)]
   }
@@ -37,6 +37,7 @@ class Function
     inputs.each_with_index do |input, index|
       self.send("input#{index}=", input)
     end
+    self.d_cubes = []
   end
 
   def or(op1, op2)
@@ -69,5 +70,9 @@ class Function
       ps << send("input#{i}").position
     end
     ps.push(position)
+  end
+
+  def singulars
+    SINGULAR_CUBES[position.to_s]
   end
 end
