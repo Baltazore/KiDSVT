@@ -12,4 +12,9 @@ f5 = Function.new(11, "or",   2, Input.new(8), Input.new(10))
 f6 = Function.new(12, "nor",  2, Input.new(7), Input.new(11))
 
 d = DCube.new
+d_cubes = DCube.generate f3, 1
+d_cubes.each do |d|
+  puts d.join(", ")
+
+end
 binding.pry

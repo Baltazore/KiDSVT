@@ -34,4 +34,12 @@ class Function
   def launch(*args)
     send(operation, *args)
   end
+
+  def positions
+    ps = []
+    inputs_number.times do |i|
+      ps << send("input#{i}").position
+    end
+    ps.push(position)
+  end
 end

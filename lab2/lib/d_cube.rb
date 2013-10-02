@@ -14,7 +14,15 @@ class DCube
         cubes << inputs.push(error_sym)
       end
     end
-    cubes
+    kubes = []
+    cubes.each do |kube|
+      cube = %W( x x x x x x x x x x x x x )
+      function.positions.each_with_index do |i, index|
+        cube[i] = kube[index]
+      end
+      kubes << cube
+    end
+    kubes
   end
 
   def check_empty
