@@ -1,4 +1,4 @@
-require 'pry'
+require 'highline/import'
 require_relative 'lib/function'
 require_relative 'lib/d_cube'
 require_relative 'lib/input'
@@ -21,8 +21,11 @@ schema = {
 blocks = [f1,f2,f3,f4,f5,f6]
 
 # input
-error_at = instance_eval('f1')
-error_value = '0'.to_i
+node = ask("Error at node(f1)?  ") { |node| node.default = "f3" }
+val  = ask("Error value(1 or 0)?  ") { |val| val.default = "0" }
+
+error_at = instance_eval(node)
+error_value = val.to_i
 
 d = DCube.new
 d_cubes = DCube.generate_error error_at, error_value
