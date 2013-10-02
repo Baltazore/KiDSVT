@@ -23,7 +23,6 @@ blocks = [f1,f2,f3,f4,f5,f6]
 # input
 node = ask("Error at node(f1)?  ") { |node| node.default = "f3" }
 val  = ask("Error value(1 or 0)?  ") { |val| val.default = "0" }
-
 error_at = instance_eval(node)
 error_value = val.to_i
 
@@ -37,12 +36,12 @@ s_functions = blocks[0...blocks.index(error_at)]
 final_set = []
 d_cubes.each_with_index do |d, index|
   # Each D-error cube
-  puts "\n\n\nError d-cube N#{index}"
+  puts "\nError d-cube N#{index}"
   puts d.join(", ")
   res = [] # result after D-intersect
   result = [] # final result
   if d_functions.any?
-  puts "\n\n D-cubes intersect"
+  puts "\n D-cubes intersect"
   # For each Func at up-path
   d_functions.each do |func|
     puts "With Function #{func.operation.upcase}"
@@ -66,7 +65,7 @@ d_cubes.each_with_index do |d, index|
   end
   #Third point
   if s_functions.any?
-  puts "\n\n S-cubes intersect"
+  puts "\n S-cubes intersect"
   # For each func to down-path
   s_functions.each do |func|
     puts "With Function #{func.operation.upcase}"
@@ -87,15 +86,11 @@ d_cubes.each_with_index do |d, index|
     result = res
     puts "No S-cubes intersections"
   end
-  puts "-"*50
-  puts "\n\n#{index} Result"
+  puts "\n#{index} Result"
   puts result.join(", ")
   final_set << result
 end
 
-
-puts "-"*50
-puts "*"*50
-puts "*"*50
-puts "-"*50
+puts "\n\n"
+puts "Final results sets"
 final_set.each { |set| puts set.join(", ")}
