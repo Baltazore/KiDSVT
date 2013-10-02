@@ -25,6 +25,10 @@ class DCube
     kubes
   end
 
+  def generate_after(function)
+
+  end
+
   def check_empty
     self.cube = prev_cube if cube.have_empty?
   end
