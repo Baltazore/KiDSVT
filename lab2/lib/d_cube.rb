@@ -18,7 +18,7 @@ class DCube
     new_cube
   end
 
-  def generate(function)
+  def generate(function, error)
 
   end
 

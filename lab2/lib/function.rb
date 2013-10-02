@@ -1,11 +1,13 @@
 class Function
 
-  attr_accessor :position, :function, :operands
+  attr_accessor :position, :function, :input0, :input1, :input2, :output
 
-  def initialize(position, function, operands)
+  def initialize(position, function, *inputs)
     self.position = position
     self.function = function
-    self.operands = operands
+    inputs.each_with_index do |input, index|
+      self.send("input#{index}=", input)
+    end
   end
 
   def or(op1, op2)
