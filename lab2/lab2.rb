@@ -21,7 +21,7 @@ schema = {
 blocks = [f1,f2,f3,f4,f5,f6]
 
 # input
-error_at = instance_eval('f3')
+error_at = instance_eval('f1')
 error_value = '0'.to_i
 
 d = DCube.new
@@ -38,6 +38,7 @@ d_cubes.each_with_index do |d, index|
   puts d.join(", ")
   res = [] # result after D-intersect
   result = [] # final result
+  if d_functions.any?
   puts "\n\n D-cubes intersect"
   # For each Func at up-path
   d_functions.each do |func|
@@ -56,7 +57,12 @@ d_cubes.each_with_index do |d, index|
       end
     end
   end
+  else
+    res = d
+    puts "No D-cube intersections"
+  end
   #Third point
+  if s_functions.any?
   puts "\n\n S-cubes intersect"
   # For each func to down-path
   s_functions.each do |func|
@@ -73,6 +79,10 @@ d_cubes.each_with_index do |d, index|
         break
       end
     end
+  end
+  else
+    result = res
+    puts "No S-cubes intersections"
   end
   puts "-"*50
   puts "\n\n#{index} Result"
