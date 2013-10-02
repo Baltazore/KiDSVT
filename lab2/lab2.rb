@@ -31,7 +31,58 @@ d_functions = schema[error_at]
 d_functions.each { |func| DCube.generate_for(func) }
 s_functions = blocks[0...blocks.index(error_at)]
 # Second point
-d_cubes.each do |d|
+final_set = []
+d_cubes.each_with_index do |d, index|
+  # Each D-error cube
+  puts "\n\n\nError d-cube N#{index}"
   puts d.join(", ")
-  binding.pry
+  res = [] # result after D-intersect
+  result = [] # final result
+  puts "\n\n D-cubes intersect"
+  # For each Func at up-path
+  d_functions.each do |func|
+    puts "With Function #{func.operation.upcase}"
+    # With all D-cubes for func
+    func.d_cubes.each_with_index do |cube, index|
+      puts "N#{index} intersect "
+      res = DCube.intersect_cubes(d, cube)
+      puts res.join(", ")
+      if DCube.have_empty?(res)
+        puts "Empty detected. Next element"
+        next
+      else
+        puts "Going on!"
+        break
+      end
+    end
+  end
+  #Third point
+  puts "\n\n S-cubes intersect"
+  # For each func to down-path
+  s_functions.each do |func|
+    puts "With Function #{func.operation.upcase}"
+    func.singulars.each_with_index do |sing|
+      puts "N#{index} intersect "
+      result = DCube.intersect_cubes(res, sing)
+      puts result.join(", ")
+      if DCube.have_empty?(res)
+        puts "Empty detected. Next element"
+        next
+      else
+        puts "Going on!"
+        break
+      end
+    end
+  end
+  puts "-"*50
+  puts "\n\n#{index} Result"
+  puts result.join(", ")
+  final_set << result
 end
+
+
+puts "-"*50
+puts "*"*50
+puts "*"*50
+puts "-"*50
+final_set.each { |set| puts set.join(", ")}
