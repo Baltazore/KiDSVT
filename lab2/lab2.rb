@@ -11,6 +11,5 @@ f4 = Function.new(10, "nand", 3, Input.new(3), Input.new(9), Input.new(6) )
 f5 = Function.new(11, "or",   2, Input.new(8), Input.new(10))
 f6 = Function.new(12, "nor",  2, Input.new(7), Input.new(11))
 
-
 d = DCube.new
 binding.pry

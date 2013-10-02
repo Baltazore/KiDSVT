@@ -32,6 +32,6 @@ class Function
   end
 
   def launch(*args)
-    self.send(self.operation, *args)
+    send(operation, *args)
   end
 end

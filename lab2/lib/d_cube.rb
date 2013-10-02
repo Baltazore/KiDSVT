@@ -1,24 +1,12 @@
 class DCube
 
-  attr_accessor :cube
+  attr_accessor :cube, :prev_cube
 
   def initialize()
     self.cube = %W( x x x x x x x x x x x x x )
   end
 
-  def check_empty
-    self.cube.select{ |el| el == "e"}.any?
-  end
-
-  def intersect_with(cube1)
-    new_cube = []
-    self.cube.size.times do |i|
-      new_cube << intersect(cube[i], cube1[i])
-    end
-    new_cube
-  end
-
-  def generate(function, error)
+  def self.generate(function, error)
     error_sym = error == 1 ? "nd" : "d"
     cubes = []
     [0, 1].repeated_permutation(function.inputs_number).to_a.each do |inputs|
@@ -29,11 +17,28 @@ class DCube
     cubes
   end
 
+  def check_empty
+    self.cube = prev_cube if cube.have_empty?
+  end
+
+  def have_empty?
+    self.cube.select{ |el| el == "e"}.any?
+  end
+
+  def intersect_with(cube1)
+    new_cube = []
+    self.prev_cube = cube
+    cube.size.times do |i|
+      new_cube << intersect(cube[i], cube1[i])
+    end
+    self.cube = new_cube
+  end
+
   private
 
   def intersect(a,b)
     return a if (a == b) || (b == "x")
     return b if (b == a) || (a == "x")
-    'e'
+    "e"
   end
 end
