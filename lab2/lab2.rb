@@ -31,6 +31,7 @@ d_functions = schema[error_at]
 d_functions.each { |func| DCube.generate_for(func) }
 s_functions = blocks[0...blocks.index(error_at)]
 # Second point
+binding.pry
 final_set = []
 d_cubes.each_with_index do |d, index|
   # Each D-error cube

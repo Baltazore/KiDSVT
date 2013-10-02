@@ -29,12 +29,24 @@ class DCube
     output_index = function.position
     zeros = function.singulars.select{|cube| cube[output_index] == "0"}
     ones  = function.singulars.select{|cube| cube[output_index] == "1"}
+    result = []
     zeros.each do |zero|
       ones.each do |one|
         res = DCube.intersect_cubes zero, one
-        function.d_cubes << res unless have_empty?(res)
+        unless have_empty?(res)
+          result << res
+        end
       end
     end
+    ones.each do |one|
+      zeros.each do |zero|
+        res = DCube.intersect_cubes one, zero
+        unless have_empty?(res)
+          result << res
+        end
+      end
+    end
+    function.d_cubes = result.uniq
   end
 
   def self.intersect_cubes(cube1, cube2)
