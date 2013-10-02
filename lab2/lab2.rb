@@ -22,7 +22,7 @@ blocks = [f1,f2,f3,f4,f5,f6]
 
 # input
 error_at = instance_eval('f3')
-error_value = '1'.to_i
+error_value = '0'.to_i
 
 d = DCube.new
 d_cubes = DCube.generate_error error_at, error_value
@@ -31,7 +31,6 @@ d_functions = schema[error_at]
 d_functions.each { |func| DCube.generate_for(func) }
 s_functions = blocks[0...blocks.index(error_at)]
 # Second point
-binding.pry
 final_set = []
 d_cubes.each_with_index do |d, index|
   # Each D-error cube
