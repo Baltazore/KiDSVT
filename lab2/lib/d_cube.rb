@@ -45,28 +45,7 @@ class DCube
     new_cube
   end
 
-  def check_empty
-    self.cube = prev_cube if cube.have_empty?
-  end
-
-  def have_empty?(cube = self.cube)
-    cube.select{ |el| el == "e"}.any?
-  end
-
-  def self.have_empty?(cube = self.cube)
-    cube.select{ |el| el == "e"}.any?
-  end
-
-  def intersect_with(cube1)
-    new_cube = []
-    self.prev_cube = cube
-    cube.size.times do |i|
-      new_cube << intersect(cube[i], cube1[i])
-    end
-    self.cube = new_cube
-  end
-
-  def intersect(a,b)
+  def self.intersect(a,b)
     if (a == b) || (b == "x")
       return a
     elsif (b == a) || (a == "x")
@@ -80,7 +59,28 @@ class DCube
     end
   end
 
-  def self.intersect(a,b)
+  def self.have_empty?(cube = self.cube)
+    cube.select{ |el| el == "e"}.any?
+  end
+
+  def check_empty
+    self.cube = prev_cube if cube.have_empty?
+  end
+
+  def have_empty?(cube = self.cube)
+    cube.select{ |el| el == "e"}.any?
+  end
+
+  def intersect_with(cube1)
+    new_cube = []
+    self.prev_cube = cube
+    cube.size.times do |i|
+      new_cube << intersect(cube[i], cube1[i])
+    end
+    self.cube = new_cube
+  end
+
+  def intersect(a,b)
     if (a == b) || (b == "x")
       return a
     elsif (b == a) || (a == "x")
