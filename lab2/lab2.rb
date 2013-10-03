@@ -1,4 +1,5 @@
 require 'highline/import'
+require 'pry'
 require_relative 'lib/function'
 require_relative 'lib/d_cube'
 require_relative 'lib/input'
@@ -41,54 +42,57 @@ d_cubes.each_with_index do |d, index|
   res = [] # result after D-intersect
   result = [] # final result
   if d_functions.any?
-  puts "\n D-cubes intersect"
-  # For each Func at up-path
-  d_functions.each do |func|
-    puts "With Function #{func.operation.upcase}"
-    # With all D-cubes for func
-    func.d_cubes.each_with_index do |cube, index|
-      puts "N#{index} intersect "
-      res = DCube.intersect_cubes(d, cube)
-      puts res.join(", ")
-      if DCube.have_empty?(res)
-        puts "Empty detected. Next element"
-        next
-      else
-        puts "Going on!"
-        break
+    puts "\n D-cubes intersect"
+    # For each Func at up-path
+    d_functions.each do |func|
+      puts "With Function #{func.operation.upcase}"
+      # With all D-cubes for func
+      func.d_cubes.each_with_index do |cube, index|
+        puts "N#{index} intersect "
+        res = DCube.d_intersect_cubes(d, cube)
+        puts res.join(", ")
+        if DCube.have_empty?(res)
+          puts "Empty detected. Next element"
+          next
+        else
+          puts "Going on!"
+          d = res
+        end
       end
     end
-  end
   else
-    res = d
+    d = res
     puts "No D-cube intersections"
   end
   #Third point
+  d_array = [d]
   if s_functions.any?
-  puts "\n S-cubes intersect"
-  # For each func to down-path
-  s_functions.each do |func|
-    puts "With Function #{func.operation.upcase}"
-    func.singulars.each_with_index do |sing|
-      puts "N#{index} intersect "
-      result = DCube.intersect_cubes(res, sing)
-      puts result.join(", ")
-      if DCube.have_empty?(res)
-        puts "Empty detected. Next element"
-        next
-      else
-        puts "Going on!"
-        break
+    puts "\n S-cubes intersect"
+    # For each func to down-path
+    s_functions.each do |func|
+      puts "With Function #{func.operation.upcase}"
+      d_temp = []
+      d_array.each do |d|
+        func.singulars.each_with_index do |sing, index|
+          puts "N#{index} intersect "
+          result = DCube.intersect_cubes(d, sing)
+          puts result.join(", ")
+          if DCube.have_empty?(result)
+            puts "Empty detected. Next element"
+            next
+          else
+            puts "Going on!"
+            d_temp << result
+          end
+        end
       end
+      d_array = d_temp
     end
-  end
+    final_set = d_array
   else
-    result = res
     puts "No S-cubes intersections"
+    final_set << d
   end
-  puts "\n#{index} Result"
-  puts result.join(", ")
-  final_set << result
 end
 
 puts "\n\n"
