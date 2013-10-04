@@ -3,7 +3,7 @@ import sys
 from types import *
 from itertools import *
 
-map_path = [ 'F1', 'F2', 'F3', 'F4','F5'  ]
+map_path = [ 'X1','X2','X3','X4','X5','X6','X7','F1', 'F2', 'F3', 'F4','F5'  ]
 
 ## Logic functions
 class Logic:
@@ -95,6 +95,7 @@ class Block:
 ## 
 
 def FuncInit(inputX,BadPin,BadStuckAt):
+
 	# Formula description
 	Field = {}
 
@@ -109,14 +110,25 @@ def FuncInit(inputX,BadPin,BadStuckAt):
 
 	#print ("Formula: Y = "+str(Out))
 
-	return Out
+	return Out,Field
 
 def FuncCalc(inputX,BadPin="",BadStuckAt=-1):
-	LastCall = FuncInit(inputX,BadPin,BadStuckAt)
+	LastCall,Field = FuncInit(inputX,BadPin,BadStuckAt)
 	
 	return LastCall.value
 
 	print("Error: {0} ({1}) stuck at {2}".format(test_field,str(Field[test_field]),error_bind_to))
+
+def FuncCallWithCount(inputX,BadPin="",BadStuckAt=-1):
+	LastCall,Field = FuncInit(inputX,BadPin,BadStuckAt)
+		
+	vals = [ int(Field[inp].value) for inp in sorted(Field.keys()) ]
+	inps = [ inputX[inp] for inp in sorted(inputX.keys()) ]
+
+	ret = inps + vals
+	return ret
+
+
 
 def main():
 
@@ -161,7 +173,18 @@ def main():
 				Y = FuncCalc(var_X)
 				normal_Y.append(Y)
 
-				bY = FuncCalc(var_X,BadPin,BadStuckAt)
+				# Filtering xN for BadPins
+				filtered_var_X = {}
+				filtered_var_X["x1"] = BadStuckAt if BadPin == "X1" else var_X["x1"]
+				filtered_var_X["x2"] = BadStuckAt if BadPin == "X2" else var_X["x2"]
+				filtered_var_X["x3"] = BadStuckAt if BadPin == "X3" else var_X["x3"]
+				filtered_var_X["x4"] = BadStuckAt if BadPin == "X4" else var_X["x4"]
+				filtered_var_X["x5"] = BadStuckAt if BadPin == "X5" else var_X["x5"]
+				filtered_var_X["x6"] = BadStuckAt if BadPin == "X6" else var_X["x6"]
+				filtered_var_X["x7"] = BadStuckAt if BadPin == "X7" else var_X["x7"]
+
+
+				bY = FuncCalc(filtered_var_X,BadPin,BadStuckAt)
 				bad_Y.append(bY)
 
 			for pos in range(len(normal_Y)):
@@ -173,7 +196,6 @@ def main():
 					#print(X_variants[pos])
 
 			for i in items:
-				
 				test = ""
 				for var in ["x1","x2","x3","x4","x5","x6","x7"]:
 					test += str(i[var])
@@ -182,9 +204,11 @@ def main():
 				#print (Test_Cases.index(test))
 				if test in Test_Cases.keys():
 					if BadStuckAt == 0:
-						Test_Cases[test][1].append(BadPin)
+						if BadPin not in Test_Cases[test][1]:
+							Test_Cases[test][1].append(BadPin)
 					else:
-						Test_Cases[test][0].append(BadPin)
+						if BadPin not in Test_Cases[test][0]:
+							Test_Cases[test][0].append(BadPin)
 				else:
 					S0 = []
 					S1 = []
@@ -194,10 +218,6 @@ def main():
 						S1.append(BadPin)
 
 					Test_Cases[test] = [S1,S0]
-
-	# Output
-	# for test in Test_Cases:
-	# 	print(test,Test_Cases[test])
 
 	# Sort Lists by count
 	MinMaxList = {}
@@ -209,8 +229,8 @@ def main():
 		else:
 			MinMaxList[num] = [case]
 
-	UncoveredFailures = map_path
-	
+	UncoveredFailures0 = map_path[:]
+	UncoveredFailures1 = map_path[:]
 	ReversedOrder = list(reversed(sorted(MinMaxList.keys())))
 
 	FinalTests = []
@@ -219,28 +239,93 @@ def main():
 	for n in ReversedOrder:
 		cases = MinMaxList[n]
 
-		if flag :
+		if flag == True :
 			break
 
 		for case in cases:
 			S1 = Test_Cases[case][0]
 			S0 = Test_Cases[case][1]
 
-			# Remove all 1's
+			covered_pins = 0
 			for cs1 in S1:
-				if cs1 in UncoveredFailures:
-					UncoveredFailures.remove(cs1)
+				if cs1 in UncoveredFailures1:
+					covered_pins += 1
+					UncoveredFailures1.remove(cs1)
 			for cs0 in S0:
-			 	if cs0 in UncoveredFailures:
-			 		UncoveredFailures.remove(cs0)
+			 	if cs0 in UncoveredFailures0:
+			 		covered_pins += 1
+			 		UncoveredFailures0.remove(cs0)		
 
-			FinalTests.append(case)
+			if covered_pins != 0 : 
+				# print (case,S1,S0)
+				# print (UncoveredFailures1)
+				# print (UncoveredFailures0)
+				FinalTests.append(case)
 
-			if len(UncoveredFailures) == 0:
+
+			if len(UncoveredFailures0) == 0 and len(UncoveredFailures0) == 1:
 				flag = True
 				break
 
-	print ("Final covering tests: ",FinalTests)
+	print ("Covering tests: ")
+	for test in FinalTests:
+		print ( test, Test_Cases[test] )
+
+	print(" ")
+	# Calc function switching
+	calls = []
+	for test in FinalTests:
+
+		# Generate test input
+		vals = test.split(" ")
+		var_x = {}
+		n = 1
+		for val in vals:
+			var_x["x"+str(n)] = int(val)
+			n += 1
+
+		calls.append(FuncCallWithCount(var_x))	
+	
+	# Calculate costs
+	perm_list = {}
+	n = 0
+	for perm in permutations(calls):
+		cost = 0
+		for i in range(0,len(perm)-1):
+			st1 = perm[i]
+			st2 = perm[i+1]
+
+			for j in range(0,len(st1)):
+				if st1[j] != st2[j]:
+					cost += 1
+
+
+		if cost in perm_list:
+			perm_list[cost].append(perm)
+		else:
+			perm_list[cost] = [perm]
+
+	#
+	optimal_list = list(sorted(perm_list.keys()))
+	best_sw = optimal_list[0]
+
+	print("Switches : ",best_sw)
+	print("First three alternatives: ")
+
+	#print (perm_list[best_sw])
+
+	n = 0
+	for perm in perm_list[best_sw]:
+
+		n += 1
+		if n==4: break
+		for item in perm:
+			print (item[:7])
+
+		print ("=========================")
+
+	
+
 
 ##################################
 if __name__=="__main__":

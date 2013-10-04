@@ -152,8 +152,8 @@ def main():
 		X_variants.append(var_X)
 
 	## Test them out!
-	BadPin = input()
-	BadStuckAt = int(input())
+	BadPin = input("Pin (F1-5 X1-7): ")
+	BadStuckAt = int(input("Stuck At (0|1): "))
 	#BadPin = "F2"
 	#BadStuckAt = 0
 
@@ -166,7 +166,18 @@ def main():
 		Y = FuncCalc(var_X)
 		normal_Y.append(Y)
 
-		bY = FuncCalc(var_X,BadPin,BadStuckAt)
+		# Filtering xN for BadPins
+		filtered_var_X = {}
+		filtered_var_X["x1"] = BadStuckAt if BadPin == "X1" else var_X["x1"]
+		filtered_var_X["x2"] = BadStuckAt if BadPin == "X2" else var_X["x2"]
+		filtered_var_X["x3"] = BadStuckAt if BadPin == "X3" else var_X["x3"]
+		filtered_var_X["x4"] = BadStuckAt if BadPin == "X4" else var_X["x4"]
+		filtered_var_X["x5"] = BadStuckAt if BadPin == "X5" else var_X["x5"]
+		filtered_var_X["x6"] = BadStuckAt if BadPin == "X6" else var_X["x6"]
+		filtered_var_X["x7"] = BadStuckAt if BadPin == "X7" else var_X["x7"]
+
+
+		bY = FuncCalc(filtered_var_X,BadPin,BadStuckAt)
 		bad_Y.append(bY)
 
 	for pos in range(len(normal_Y)):
@@ -176,9 +187,6 @@ def main():
 		if val1 != val2:
 			items.append(X_variants[pos])
 			#print(X_variants[pos])
-
-
-	print (len(items))
 
 	for i in items:
 		for var in ["x1","x2","x3","x4","x5","x6","x7"]:
