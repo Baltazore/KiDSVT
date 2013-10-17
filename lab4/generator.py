@@ -38,14 +38,17 @@ class Generator:
             else:
                 return '1'
         # calback function
-        res_pos = self.poly.index('1')
+        rev_poly = self.poly[::-1]
+        res_pos = rev_poly.index('1')
         res = self.state[res_pos]
 
-        for pos in range(res_pos,len(self.state)):
-            if self.poly[pos] == '1':
+        #print ("B",res,res_pos)
+        for pos in range(res_pos+1,7):
+            if rev_poly[pos] == '1':
                 res = Xor(res,self.state[pos])
         ## final xor
         res = Xor(res,'1')
+        #print ("A",res)
 
         # New State
         old_state = self.state[:6]
@@ -68,7 +71,7 @@ class Generator:
         while flag:
             state = self.tick()
     
-            if self.state == self.initState:
+            if state == self.initState:
                 flag = False
 
         period = self.tiks
@@ -87,12 +90,36 @@ class Generator:
         self.tiks = 0
 
         states = []
-        period = self.findGenPeriod()
-
-        for tick in range(period):
-            states.append( self.tick() )    
+        #period = self.findGenPeriod()
+        state = ""
+        while state != self.initState:
+        #for tick in range(period):
+            state = self.tick()
+            states.append( state )    
 
         self.state = oldState
         self.tiks = oldTiks
 
         return states
+
+
+# gen = Generator(poly="1001000")
+# gen.DEBUG= True
+# states = gen.getPossibleStates()
+
+# #for i in range(0,128):
+# #    gen.tick()
+
+# print (len(states))
+
+# perm = list(range(128))
+# ret = []
+# for variant in perm:
+#     ret.append( '{0:07b}'.format(variant) )
+
+# def diff(a,b):
+#     a = set(a)
+#     return [ aa for aa in b if aa not in a ]
+
+
+# print (diff(states,ret))

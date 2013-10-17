@@ -5,7 +5,7 @@ from types import *
 from itertools import *
 from generator import *
 
-DEBUG = False
+DEBUG = True
 
 map_path = [ 'X1','X2','X3','X4','X5','X6','X7','F1', 'F2', 'F3', 'F4','F5'  ]
 
@@ -238,7 +238,7 @@ def main():
 
                     Test_Cases[test] = [S1,S0]
 
-    gen = Generator()
+    gen = Generator(poly="1010011")
 
     TestSwitches = {}
 
@@ -260,42 +260,48 @@ def main():
 
         flag = False
         for state in genStates:
+            
             if flag : break
 
             genSwitches += 1
 
-            state = stringExpand(state)
-
-            if (state in Test_Cases.keys()):
-                S0 = Test_Cases[state][1]
-                S1 = Test_Cases[state][0]
+            key_state = stringExpand(state)
+            
+            if (key_state in Test_Cases.keys()):
+                #print (key_state,"== ")
+                S0 = Test_Cases[key_state][1]
+                S1 = Test_Cases[key_state][0]
 
                 # Cover errors
                 covered_pins = 0
+
                 for cs1 in S1:
                     if cs1 in UncoveredFailures1:
+                        #print ("CS1:",cs1)
                         covered_pins += 1
                         UncoveredFailures1.remove(cs1)
                 for cs0 in S0:
                     if cs0 in UncoveredFailures0:
+                        #print ("CS0:",cs0)
                         covered_pins += 1
                         UncoveredFailures0.remove(cs0)      
 
                 if covered_pins != 0 : 
                     #print (state,"  = ", covered_pins)
-                    FinalTests.append(state)
+                    FinalTests.append(key_state)
 
-                if len(UncoveredFailures0) == 0 and len(UncoveredFailures0) == 0:
+                if len(UncoveredFailures0) + len(UncoveredFailures0) == 0:
                     flag = True
-                    continue
+                    #continue
             else:
-                #if DEBUG: print ("== State not in Test_Cases")
-                continue
-                
+                if DEBUG: 
+                    #print (key_state,"== State not in Test_Cases")
+                    pass
+                #continue
 
-        if len(UncoveredFailures0) + len(UncoveredFailures1) != 0: 
-            if DEBUG: print ("== Drop")
-            continue
+        if genSwitches == 1:
+            print ("== Unusable start combination")
+        if not flag : continue
 
         if DEBUG: print ("== steps %s" % genSwitches)
         if genSwitches in TestSwitches:
@@ -307,10 +313,13 @@ def main():
         #input()
 
     minSteps = list(sorted(TestSwitches.keys()))
+    print ("")
     print ("Minimum generator steps : ",minSteps[0])
     print ("Start values for min. steps: ")
     #print (minSteps)
+    print ("")
     print ("\n".join(TestSwitches[minSteps[0]]))
+    print ("")
 
 ##################################
 if __name__=="__main__":
