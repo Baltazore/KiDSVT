@@ -193,7 +193,6 @@ def main():
 
 				if val1 != val2:
 					items.append(X_variants[pos])
-					#print(X_variants[pos])
 
 			for i in items:
 				test = ""
@@ -201,7 +200,6 @@ def main():
 					test += str(i[var])
 					if var != "x7": test+=" "
 
-				#print (Test_Cases.index(test))
 				if test in Test_Cases.keys():
 					if BadStuckAt == 0:
 						if BadPin not in Test_Cases[test][1]:
@@ -219,7 +217,8 @@ def main():
 
 					Test_Cases[test] = [S1,S0]
 
-	# Sort Lists by count
+	# Find minimum test cases
+	# Sort Lists by count of switches
 	MinMaxList = {}
 	for case in Test_Cases:
 		num = len(Test_Cases[case][0]) + len(Test_Cases[case][1])
@@ -257,11 +256,7 @@ def main():
 			 		UncoveredFailures0.remove(cs0)		
 
 			if covered_pins != 0 : 
-				# print (case,S1,S0)
-				# print (UncoveredFailures1)
-				# print (UncoveredFailures0)
 				FinalTests.append(case)
-
 
 			if len(UncoveredFailures0) == 0 and len(UncoveredFailures0) == 1:
 				flag = True
