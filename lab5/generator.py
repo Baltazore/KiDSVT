@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class Generator:
     ''' Usage example:
     init_state = "1000110"
@@ -11,13 +12,6 @@ class Generator:
     # States
     states = gen.getPossibleStates() # ['1100011','0110001', ... ] , len(states) = 62
     '''  
-# Короче тут надо делать тики и проверять обратную связь
-# подаем начальное состояние и перебираем пока не найдем 100% покрытие
-# То есть:
-# 1. метод обратной связи который будет выдавать значение которое надо запихнуть на вход
-# 2. по тикам проверять что набор покрывает  и считать тики до 100% покрытия
-# 3. если не 100% то задвигаем  из метода значение и делаем сдвиг
-    # poly = 1010011 - x7 xor x5 xor x2 xor x1 xor 1 
     DEBUG = False
 
     def __init__(self,poly="1010011",start="0000000"):
@@ -101,25 +95,3 @@ class Generator:
         self.tiks = oldTiks
 
         return states
-
-
-# gen = Generator(poly="1001000")
-# gen.DEBUG= True
-# states = gen.getPossibleStates()
-
-# #for i in range(0,128):
-# #    gen.tick()
-
-# print (len(states))
-
-# perm = list(range(128))
-# ret = []
-# for variant in perm:
-#     ret.append( '{0:07b}'.format(variant) )
-
-# def diff(a,b):
-#     a = set(a)
-#     return [ aa for aa in b if aa not in a ]
-
-
-# print (diff(states,ret))
