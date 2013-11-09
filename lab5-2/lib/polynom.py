@@ -1,21 +1,16 @@
 class Polynom
 
-  def initialize(arr)
-    @arr = arr
-  end
+  def __init__(self, arr)
+    self.arr = arr
 
   def indexes
-    @indexes ||= @arr.map.with_index{|v,i| v == 1 ? i : nil}.
+    #TODO: map.with_index
+    self.indexes ||= self.arr.map.with_index{|v,i| v == 1 ? i : nil}.
                  reject{|i| i.nil? || i == 0}.
                  map{|i| i - 1}
-  end
 
   def to_a
-    @arr
-  end
+    self.arr
 
   def to_s
     indexes.reverse.map{|i| "x#{i+1}"}.join(" \u2295 ") + " \u2295 1"
-  end
-
-end

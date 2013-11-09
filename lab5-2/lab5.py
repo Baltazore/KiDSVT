@@ -15,29 +15,27 @@ data = PolynomGenerator.new(*[POLYNOM_MIN...POLYNOM_MAX]).generate
 complexity = 100
 result = []
 
-data.each do |power, polynoms|
-  puts "Power #{power}"
+for power, polynoms in data:
+  print "Power #{power}"
 
-  polynoms.each do |polynom|
+  for polynom in polyoms:
     analyzer = Analyzer.new(polynom)
     coverage = (CoverageCounter.new(states, analyzer).count * 100).round
     str = "#{polynom.to_s} | #{coverage.to_s} | #{analyzer.complexity}"
-    if coverage == 100
-      if analyzer.complexity < complexity
+    if coverage == 100:
+      if analyzer.complexity < complexity:
         complexity = analyzer.complexity
         result = [] << polynom
-      elsif analyzer.complexity == complexity
+      elif analyzer.complexity == complexity:
         result  << polynom
-      end
       str = str.green
     else
       str = str.red
-    end
 
-    puts str
-  end
-end
+    print str
 
-puts "Optimal polynoms with #{complexity} complexity"
+print "Optimal polynoms with #{complexity} complexity"
 
-result.each { |polynom| puts "#{polynom.to_s}" }
+result.each { |polynom|  }
+for polynom in result:
+  print("#{polynom.to_s}")

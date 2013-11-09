@@ -1,20 +1,14 @@
 class Lsrf
   DEFAULT_STATE = [1,0,0,0,0,0,0]
-  attr_reader :cycle
 
-  def initialize(state=DEFAULT_STATE)
-    @state = state.dup
-    @cycle = 0
-  end
+  def __init__(self, state=DEFAULT_STATE)
+    self.state = state.dup
+    self.cycle = 0
 
   def next
-    @state.unshift(@state[6] ^ @state[0])
-    @state.pop
-    @cycle += 1
-  end
+    self.state.unshift(self.state[6] ^ self.state[0])
+    self.state.pop
+    self.cycle += 1
 
   def state
-    @state.dup
-  end
-
-end
+    self.state.dup

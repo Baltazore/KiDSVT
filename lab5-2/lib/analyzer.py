@@ -6,6 +6,7 @@ class Analyzer
     reset
 
   def shift(value)
+    # TODO: convert
     i = self.polynom.indexes.inject(value) {|input, index| input ^ self.state[index]}
     self.state.unshift(i)
     self.state.pop
